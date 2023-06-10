@@ -2,11 +2,14 @@ import pandas as pd
 from datetime import datetime
 import matplotlib.pyplot as plt
 from datetime import timedelta
+import os
+
+# Get the current working directory
+cwd = os.getcwd()
 
 # Read the CSV files into pandas DataFrames
-songs_df = pd.read_csv('recently_played.csv')
-activities_df = pd.read_csv('strava_activities.csv')
-
+songs_df = pd.read_csv(f'{cwd}/user_data/recently_played.csv')
+activities_df = pd.read_csv(f'{cwd}/user_data/strava_activities.csv')
 
 songs_df = songs_df.rename(columns={'Track Name': 'track_name',
                                     'Artist Name': 'artist_name',
@@ -122,25 +125,23 @@ for _, activity_row in activities_df.iterrows():
     activity_names.append(activity_name)
 
 # Create a new DataFrame using the closest song timestamps
-new_df = pd.DataFrame({'activity_start_time': activities_df['start_date'],
+activity_df_slim = pd.DataFrame({'activity_start_time': activities_df['start_date'],
                         'end_date': activities_df['end_date'],
                        'activity_name': activity_names,
                        'closest_song_time': closest_song_times,
                        'duration': durations
                        })
 
-new_df['played_at'] = new_df['closest_song_time']
-new_df = add_truncated_date_columns(new_df)
+activity_df_slim['played_at'] = activity_df_slim['closest_song_time']
+activity_df_slim = add_truncated_date_columns(activity_df_slim)
 songs_df = add_truncated_date_columns(songs_df)
 
+activity_df_slim['played_at_trunc'] = activity_df_slim['closest_song_time_trunc']
 
-# join_cols = []
-# return_cols = []
-# join_and_return(activities_df,songs_df, join_cols, return_cols)
-new_df['played_at_trunc'] = new_df['closest_song_time_trunc']
-final_df = new_df.merge(songs_df, on='played_at_trunc')
+# Merge Activity and Song Data into one DF
+final_df = activity_df_slim.merge(songs_df, on='played_at_trunc')
 
-final_df=final_df.sort_values(by=['activity_start_time', 'played_at_y'], ascending=[False, True])
+final_df = final_df.sort_values(by=['activity_start_time', 'played_at_y'], ascending=[False, True])
                  
 # Rename Columns:
 final_df = final_df.rename(columns={
@@ -148,21 +149,13 @@ final_df = final_df.rename(columns={
     'played_at_x': 'activity_start_ts',
 })
 
-# final_df = final_df.reindex(final_df['song_start_ts'])
 
-# Convert milliseconds to timedelta
-# df['milliseconds'] = pd.to_timedelta(df['milliseconds'], unit='ms')
-
-# # Create 'end_time' column by adding 'start_time' and 'milliseconds'
-# df['end_time'] = df['start_time'] + df['milliseconds']
-
+# Calculate Song_End Timestamp
 final_df['duration_ms'] = final_df['duration_ms']/1000
 final_df['song_end_ts'] = final_df['song_start_ts'] + pd.to_timedelta(final_df['duration_ms'], unit='ms')
-# Add Song_End Date
-
 final_df['song_length'] = final_df['song_end_ts'] - final_df['song_start_ts']  
 
-# minutes 
+# Convert to Minutes  and round
 final_df['song_length_min']  = final_df['song_length'].dt.total_seconds()/60
 final_df['song_length_min'] = final_df['song_length_min'].round(5)      
 
@@ -173,16 +166,6 @@ final_df['song_length_sec']  = final_df['song_length'].dt.total_seconds()
 final_df['song_length_sec_cum']= final_df['song_length_sec'].cumsum()
 
 
-
-# final_df_expanded = expand_dataframe(final_df)
-
-
-# Artificial Activity end timestamp:
-grouped_df = final_df.groupby(['activity_name','activity_start_time']).agg({'song_end_ts': 'max'})
-
-# Rename the column
-grouped_df = grouped_df.rename(columns={'song_end_ts': 'proxy_activity_end_ts'})
-final_df = pd.merge(final_df, grouped_df, on=['activity_name','activity_start_time'])
 # final_df_expanded.to_csv('runs_songs_big.csv', index=False)
 final_df.to_csv('runs_songs.csv', index=False)
 
