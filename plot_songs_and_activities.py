@@ -44,7 +44,6 @@ for _, row in df.iterrows():
     activity_start = row['activity_start_time']
     cum = row['song_length_sec_cum']
     activity_color = row['activity_color']
-    proxy_activity_end_ts = row['proxy_activity_end_ts']
     activity_end_ts = row['end_date']
     # Add a line segment for each track
     

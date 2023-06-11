@@ -13,12 +13,6 @@ client_secret = config['SPOTIFY_API']['client_secret']
 redirect_uri = config['SPOTIFY_API']['redirect_uri']
 scope = config['SPOTIFY_API']['scope'] 
 
-# Spotify API credentials
-# client_id = '97c347438bef430f84b20f0571468cc5'
-# client_secret = '043fb2da144b494cafbc3008b9934084'
-# redirect_uri = 'http://localhost:8000/callback'
-# scope = 'user-read-recently-played'
-
 # Flask server setup
 app = Flask(__name__)
 
