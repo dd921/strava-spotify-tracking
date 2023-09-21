@@ -8,6 +8,9 @@ import os
 cwd = os.getcwd()
 
 # Read the CSV files into pandas DataFrames
+# songs_df = pd.read_csv(f'{cwd}/user_data/recently_played.csv')
+# activities_df = pd.read_csv(f'{cwd}/user_data/strava_activities.csv')
+
 songs_df = pd.read_csv(f'{cwd}/user_data/recently_played.csv')
 activities_df = pd.read_csv(f'{cwd}/user_data/strava_activities.csv')
 
@@ -167,7 +170,7 @@ final_df['song_length_sec_cum']= final_df['song_length_sec'].cumsum()
 
 
 # final_df_expanded.to_csv('runs_songs_big.csv', index=False)
-final_df.to_csv('runs_songs.csv', index=False)
+final_df.to_csv('user_data/runs_songs.csv', index=False)
 
 
 

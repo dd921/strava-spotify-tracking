@@ -1,5 +1,7 @@
 import requests
 import pandas as pd
+import sys
+
 
 def process_recently_played(access_token):
     # Get recently played tracks
@@ -46,5 +48,6 @@ df = process_recently_played(access_token)
 
 # Save DataFrame to a CSV file
 if df is not None:
-    df.to_csv('recently_played.csv', index=False)
+    df.to_csv('user_data/recently_played.csv',  mode='a', header=False, index=False)
     print('Recently played tracks saved successfully')
+    sys.exit(0)

@@ -4,6 +4,8 @@ import json
 import pandas as pd
 import yaml
 from dateutil import parser
+import os
+import signal
 
 with open('config.yaml', 'r') as config_file:
     config = yaml.safe_load(config_file)
@@ -50,9 +52,14 @@ def callback():
     df_activities['end_date'] = pd.to_datetime(df_activities['start_date']) + pd.to_timedelta(df_activities['elapsed_time'], unit='s')
 
     # Save strava activities to CSV
-    df_activities.to_csv('strava_activities.csv', index=False)
+    df_activities.to_csv('user_data/strava_activities.csv', index=False)
 
-    return df_activities # consider commenting this out
+    #Kill the Flask App after CSV is saved
+    kill = os.kill(os.getpid(), signal.SIGINT)  # Send termination signal
+
+    return kill
+
+
 
 if __name__ == '__main__':
     app.run()

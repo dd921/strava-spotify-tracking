@@ -26,7 +26,6 @@ authorization_params = {
 }
 authorization_url = authorization_base_url + '?' + urlencode(authorization_params)
 
-
 @app.route('/')
 def index():
     return redirect(authorization_url)
