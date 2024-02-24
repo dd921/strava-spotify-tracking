@@ -4,7 +4,7 @@ import random
 from datetime import timedelta
 from dateutil import parser
 
-from data_cleaning import clean_song_run_data
+from strava_spotify.data_cleaning import clean_song_run_data
 
 # Read the CSV file into a DataFrame
 df_raw = pd.read_csv('~/projects/strava-spotify-tracking/user_data/runs_songs.csv')

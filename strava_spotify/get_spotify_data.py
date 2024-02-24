@@ -16,6 +16,8 @@ def process_recently_played(access_token):
     recently_played_response = requests.get(recently_played_url, params=recently_played_params, headers=recently_played_headers)
     recently_played_data = recently_played_response.json()
 
+    print("Status Code:", recently_played_response.status_code)
+    print("Response Text:", recently_played_response.text)
     # Process recently played tracks
     if 'items' in recently_played_data:
         tracks = []
@@ -31,8 +33,13 @@ def process_recently_played(access_token):
                            'duration_ms': duration_ms,
                            'duration_ms': duration_s,
                            })
-
         df = pd.DataFrame(tracks)
+        df = df.rename(columns={
+        'Track Name': 'track_name',
+        'Artist Name': 'artist',
+        'Played At': 'song_start_ts_utc',
+        })
+        df.sort_values(by=['song_start_ts_utc'], inplace=True)  # Corrected line
         return df
     else:
         print('No recently played tracks found')
@@ -40,12 +47,12 @@ def process_recently_played(access_token):
         return None
 
 # Read the access token generated in generate_spotify_access_token.py
-with open('access_token.txt', 'r') as file:
+with open('/Users/dandeangelis/projects/strava-spotify-tracking/access_tokens/access_token.txt', 'r') as file:
     access_token = file.read().strip()
 
 # Call the process_recently_played function with the access token
 df = process_recently_played(access_token)
-
+print(df)
 # Save DataFrame to a CSV file
 if df is not None:
     df.to_csv('user_data/recently_played.csv',  mode='a', header=False, index=False)

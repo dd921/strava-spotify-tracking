@@ -4,7 +4,7 @@ import requests
 import yaml
 
 
-with open('config.yaml', 'r') as config_file:
+with open('~/strava-spotify-tracking/access_tokens/config.yaml', 'r') as config_file:
     config = yaml.safe_load(config_file)
 print(config)
 # Access the configuration data
@@ -47,7 +47,7 @@ def callback():
     token_response = requests.post(token_url, data=token_data)
     access_token = token_response.json()['access_token']
 
-    with open('access_token.txt', 'w') as file:
+    with open('~/strava-spotify-tracking/access_tokens/access_token.txt', 'w') as file:
         file.write(access_token)
 
     return 'Access Token Generated'
